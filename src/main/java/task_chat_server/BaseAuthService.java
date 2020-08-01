@@ -1,4 +1,4 @@
-package task_2_server;
+package task_chat_server;
 
 import java.sql.*;
 
@@ -13,6 +13,7 @@ public class BaseAuthService implements AuthService{
             stmt.executeUpdate(sqlRead);
             return newNick;
         } catch (SQLException throwables) {
+            MyServer.getLOGGER().warn(throwables);
             return null;
         }
     }
@@ -20,15 +21,16 @@ public class BaseAuthService implements AuthService{
     @Override
     public void start() {
         try {
+
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection("jdbc:sqlite:lesson.db");
             stmt = conn.createStatement();
 
             stmt.executeUpdate("CREATE TABLE if NOT EXISTS Entries (Login STRING UNIQUE NOT NULL, Pass STRING NOT NULL, Nick STRING UNIQUE NOT NULL)");
 
-            System.out.println("Сервис аутентификации запущен");
+            MyServer.getLOGGER().info("Сервис аутентификации запущен");
         } catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
+            MyServer.getLOGGER().warn(e);
         }
     }
 
@@ -38,6 +40,7 @@ public class BaseAuthService implements AuthService{
         try(ResultSet rs = stmt.executeQuery(sqlRead)){
             return rs.getString("Nick");
         } catch (SQLException throwables) {
+            MyServer.getLOGGER().warn(throwables);
             return null;
         }
     }
@@ -48,9 +51,9 @@ public class BaseAuthService implements AuthService{
             conn.close();
             stmt.close();
             ps.close();
-            System.out.println("Сервис аутентификации остановлен");
+            MyServer.getLOGGER().info("Сервис аутентификации остановлен");
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            MyServer.getLOGGER().warn(throwables);
         }
     }
 

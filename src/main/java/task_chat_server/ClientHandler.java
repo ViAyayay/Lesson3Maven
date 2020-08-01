@@ -1,8 +1,9 @@
-package task_2_server;
+package task_chat_server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.Socket;
 
 public class ClientHandler {
@@ -32,7 +33,7 @@ public class ClientHandler {
                             try {
                                 authentication();
                             } catch (IOException exception) {
-                                exception.printStackTrace();
+                                MyServer.getLOGGER().warn(exception);
                             }
                         }
                     });
@@ -48,8 +49,7 @@ public class ClientHandler {
                     }
                     readMessages();
                 } catch (IOException e) {
-                    System.out.println("disconnect");
-//                    e.printStackTrace();
+                    MyServer.getLOGGER().warn("disconnect "+e);
                 } finally {
                     closeConnection();
                 }
@@ -111,7 +111,7 @@ public class ClientHandler {
                 }
                 continue;
             }
-            System.out.println("от " + name+": " + strFromClient);
+            MyServer.getLOGGER().trace("от " + name+": " + strFromClient);
             myServer.broadcastMsg(name  + ": " + strFromClient);
         }
     }
@@ -120,7 +120,7 @@ public class ClientHandler {
         try {
             out.writeUTF(msg);
         }catch (IOException e){
-            e.printStackTrace();
+            MyServer.getLOGGER().warn(e);
         }
     }
 
@@ -130,17 +130,17 @@ public class ClientHandler {
         try{
             in.close();
         }catch (IOException e){
-            e.printStackTrace();
+            MyServer.getLOGGER().warn(e);
         }
         try{
             out.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            MyServer.getLOGGER().warn(e);
         }
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            MyServer.getLOGGER().warn(e);
         }
     }
 }

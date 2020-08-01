@@ -1,4 +1,4 @@
-package task_2_server;
+package task_chat_server;
 
 public class ServerApp {
 
