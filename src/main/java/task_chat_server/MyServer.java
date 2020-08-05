@@ -1,4 +1,7 @@
-package task_2_server;
+package task_chat_server;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,6 +17,7 @@ public class MyServer {
     private List<ClientHandler> clients;
     private AuthService authService;
     private ExecutorService executor = Executors.newCachedThreadPool();
+    private static final Logger LOGGER = LogManager.getLogger(MyServer.class);
 
     public AuthService getAuthService(){
         return authService;
@@ -29,15 +33,14 @@ public class MyServer {
             authService = new BaseAuthService();
             clients = new ArrayList<>();
             while (true){
-                System.out.println("Сервер подключён к порту: "+port);
-                System.out.println("Сервер ожидает подключение");
+                LOGGER.info("Сервер подключён к порту: "+port);
+                LOGGER.info("Сервер ожидает подключение");
                 Socket socket = server.accept();
-                System.out.println("Клиент подключился");
+                LOGGER.info("Клиент подключился");
                 new ClientHandler(this, socket);
             }
         }catch (IOException e){
-            e.printStackTrace();
-            System.out.println("Ошибка в работе сервера");
+            LOGGER.warn("Ошибка в работе сервера "+e);
         }finally {
             if(authService != null){
 //                executor.shutdownNow();
@@ -82,6 +85,10 @@ public class MyServer {
 
     public ExecutorService getExecutor() {
         return executor;
+    }
+
+    public static Logger getLOGGER() {
+        return LOGGER;
     }
 }
 
